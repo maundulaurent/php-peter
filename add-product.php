@@ -1,12 +1,51 @@
 <?php
 ob_start();
+session_start();
 
+if (!isset($_SESSION['user_id'])) {
+  header('Location: login');
+  exit();
+}
 include 'includes/db.php';
 
 $categories = mysqli_query($conn, "SELECT category_id, category_name FROM categories");
-
 $suppliers = mysqli_query($conn, "SELECT supplier_id, supplier_name FROM suppliers");
 
+// Handle form submission
+if (isset($_POST['add'])) {
+    // Capture and sanitize form data
+    $category_id = isset($_POST['category_id']) ? mysqli_real_escape_string($conn, $_POST['category_id']) : null;
+    $product_name = isset($_POST['product_name']) ? mysqli_real_escape_string($conn, $_POST['product_name']) : null;
+    $supplier_id = isset($_POST['supplier_id']) ? mysqli_real_escape_string($conn, $_POST['supplier_id']) : null;
+    $barcode = isset($_POST['barcode']) ? mysqli_real_escape_string($conn, $_POST['barcode']) : null;
+    $cost_price = isset($_POST['cost_price']) ? mysqli_real_escape_string($conn, $_POST['cost_price']) : null;
+    $selling_price = isset($_POST['selling_price']) ? mysqli_real_escape_string($conn, $_POST['selling_price']) : null;
+    $discount_price = isset($_POST['discount_price']) ? mysqli_real_escape_string($conn, $_POST['discount_price']) : null;
+    $description = isset($_POST['description']) ? mysqli_real_escape_string($conn, $_POST['description']) : null;
+    $quantity_available = isset($_POST['quantity_available']) ? mysqli_real_escape_string($conn, $_POST['quantity_available']) : null;
+    $minimum_stock_level = isset($_POST['minimum_stock_level']) ? mysqli_real_escape_string($conn, $_POST['minimum_stock_level']) : null;
+
+    // Handle image upload
+    $image_path = "";
+    if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] == 0) {
+        $image_name = $_FILES['image_path']['name'];
+        $image_tmp = $_FILES['image_path']['tmp_name'];
+        $image_path = "uploads/products/" . basename($image_name);
+
+        // Move uploaded file
+        move_uploaded_file($image_tmp, $image_path);
+    }
+
+    // Insert data into database
+    $query = "INSERT INTO products (product_name, category_id, barcode, description, cost_price, selling_price, quantity_available, minimum_stock_level, supplier_id, image_path)
+              VALUES ('$product_name', '$category_id', '$barcode', '$description', '$cost_price', '$selling_price', '$quantity_available', '$minimum_stock_level', '$supplier_id', '$image_path')";
+
+    if (mysqli_query($conn, $query)) {
+        echo "<script>alert('Product added successfully!');</script>";
+    } else {
+        echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +64,7 @@ $suppliers = mysqli_query($conn, "SELECT supplier_id, supplier_name FROM supplie
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed"><!--dark-mode-->
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
 
   <!-- Preloader -->
@@ -33,7 +72,6 @@ $suppliers = mysqli_query($conn, "SELECT supplier_id, supplier_name FROM supplie
 
   <!-- Navbar -->
  <?php include "includes/navbar.php" ?>
-  <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
 <?php include "includes/sidebar.php" ?>
@@ -46,17 +84,16 @@ $suppliers = mysqli_query($conn, "SELECT supplier_id, supplier_name FROM supplie
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Add Products</h1>
-          </div><!-- /.col -->
+          </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item active">Add Product</li>
             </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- /.content-header -->
 
     <!-- Main content -->
     <section class="content">
@@ -64,168 +101,140 @@ $suppliers = mysqli_query($conn, "SELECT supplier_id, supplier_name FROM supplie
         <!-- Info boxes -->
         <div class="row">
           <div class="col-12 col-sm-10 col-md-2">
-            
-            <!-- /.info-box -->
           </div>
-          <!-- /.col -->
           <div class="col-12 col-sm-10 col-md-8">
           <div class="card card-primary">
           <div class="card-header">
             <h3 class="card-title">Add Product</h3>
-
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
               </button>
             </div>
           </div>
-          <!-- /.card-header -->
+
           <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Select Category</label>
-                  <select class="form-control select2" name="category_id" style="width: 100%;">
-                    <option selected="selected">-select-</option>
-                    <?php while ($row= mysqli_fetch_assoc($categories)): ?>
-                      <option value="<?php echo $row['category_id']; ?>"><?php echo ?></option>
-                    <?php endwhile; ?>
-                  </select>
-                </div>
-              </div>
-              <!-- /.col -->
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Product Name</label>
-                    <input type="text" class="form-control" name="barcode" autofocus="" placeholder="Enter Name">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Select Supplier</label>
-                  <select class="form-control select2" style="width: 100%;">
-                    <option selected="selected">anonymous</option>
-                    <option>cat 1</option>
-                    <option>cat 2</option>
-                    <option>category 3</option>
-                    <option>category 4</option>
-                    <option>category 5</option>
-                    <option>category 6</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Barcode*</label>
-                    <input type="text" class="form-control" name="barcode" autofocus="" placeholder="Enter barcode">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Buying Price</label>
-                    <input type="number" min="0" class="form-control" name="barcode" autofocus="" placeholder="Enter Buying Price">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Selling Price</label>
-                    <input type="number" min="0" class="form-control" name="barcode" autofocus="" placeholder="Enter Selling Price">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Discount Price</label>
-                    <input type="number" min="0" class="form-control" name="barcode" autofocus="" placeholder="Enter Discount Price">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Specification</label>
-                    <input type="text" class="form-control" name="barcode" autofocus="" placeholder="Enter specifications">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Counter Quantity</label>
-                    <input type="number" min="0" class="form-control" name="barcode" autofocus="" placeholder="Enter barcode">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Store Quantity</label>
-                    <input type="number" min="0" class="form-control" name="barcode" autofocus="" placeholder="Enter Store Quantity">
-                </div>
-              </div>
-              
-              <div class="form-group">
-                    <label for="exampleInputFile">Add Image</label>
-                    <div class="input-group">
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="exampleInputFile">
-                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                      </div>
-                      <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                      </div>
-                    </div>
+            <form method="POST" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Select Category</label>
+                    <select class="form-control select2" name="category_id" style="width: 100%;">
+                      <option selected="selected">-select-</option>
+                      <?php while ($row= mysqli_fetch_assoc($categories)): ?>
+                        <option value="<?php echo $row['category_id']; ?>"><?php echo $row['category_name']; ?></option>
+                      <?php endwhile; ?>
+                    </select>
                   </div>
-              <!-- /.col -->
-               
-            </div>
-            <!-- /.row -->
+                </div>
 
-            <div class="d-flex justify-content-between">
-                
-                <button type="reset" class="btn btn-secondary">Cancel</button>
-                <button type="submit" name="add" class="btn btn-primary">Save</button>
-            </div>
-            <!-- /.row -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="product_name">Product Name</label>
+                      <input type="text" class="form-control" name="product_name" autofocus="" placeholder="Enter Name">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Select Supplier</label>
+                    <select class="form-control select2" name="supplier_id" style="width: 100%;">
+                      <option selected="selected">-select-</option>
+                      <?php while ($row = mysqli_fetch_assoc($suppliers)): ?>
+                        <option value="<?php echo $row['supplier_id']; ?>"><?php echo $row['supplier_name']; ?></option>
+                      <?php endwhile; ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="barcode">Barcode*</label>
+                      <input type="text" class="form-control" name="barcode" autofocus="" placeholder="Enter barcode">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="cost_price">Buying Price</label>
+                      <input type="number" min="0" class="form-control" name="cost_price" autofocus="" placeholder="Enter Buying Price">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="selling_price">Selling Price</label>
+                      <input type="number" min="0" class="form-control" name="selling_price" autofocus="" placeholder="Enter Selling Price">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="discount_price">Discount Price</label>
+                      <input type="number" min="0" class="form-control" name="discount_price" autofocus="" placeholder="Enter Discount Price">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="description">Description</label>
+                      <input type="text" class="form-control" name="description" autofocus="" placeholder="Enter description">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="quantity_available">Counter Quantity</label>
+                      <input type="number" min="0" class="form-control" name="quantity_available" autofocus="" placeholder="Enter counter quantity">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="minimum_stock_level">Store Quantity</label>
+                      <input type="number" min="0" class="form-control" name="minimum_stock_level" autofocus="" placeholder="Enter Store Quantity">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                      <label for="image_path">Add Image</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" name="image_path" id="image_path">
+                          <label class="custom-file-label" for="image_path">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                          <span class="input-group-text">Upload</span>
+                        </div>
+                      </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between">
+                  <button type="reset" class="btn btn-secondary">Cancel</button>
+                  <button type="submit" name="add" class="btn btn-primary">Save</button>
+              </div>
+            </form>
           </div>
-          <!-- /.card-body -->
-          
         </div>
           </div>
-          <!-- /.col -->
-
-          <div class="col-12 col-sm-6 col-md-2">
-            
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-12 col-sm-6 col-md-3">
-           
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
 
         <div class="row">
           <div class="col-md-12">
-           
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
-
       
-      </div><!--/. container-fluid -->
+      </div>
     </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 
   <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+  <aside class="control-sidebar control-sidebar-dark"></aside>
 
   <!-- Main Footer -->
   <?php include "includes/footer.php" ?>
 </div>
-<!-- ./wrapper -->
 
 <?php include "includes/scripts.php" ?>
 </body>

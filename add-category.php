@@ -1,5 +1,11 @@
 <?php
 ob_start();
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+  header('Location: login');
+  exit();
+}
 // Include the database connection
 include 'includes/db.php';
 
@@ -100,9 +106,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <!-- /.card-body -->
 
-                <div class="card-footer">
+                <div class="p-4 d-flex justify-content-between">
+                <button type="reset" class="btn btn-secondary">Cancel</button>
                   <button type="submit" class="btn btn-primary">Submit</button>
-                  <button type="reset" class="btn btn-secondary">Cancel</button>
                 </div>
               </form>
             </div>
