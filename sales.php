@@ -8,6 +8,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 include 'includes/db.php';
 
+// Fetch products for dropdown
+$query = "SELECT product_id, product_name, barcode, description, selling_price FROM products WHERE status = 'Active'";
+$result = mysqli_query($conn, $query);
+$products = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +29,45 @@ include 'includes/db.php';
   <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <style>
+      /* Add your custom styles here */
+      .dropdown {
+          position: relative;
+          display: inline-block;
+      }
+      .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f9f9f9;
+          min-width: 200px;
+          z-index: 1;
+          border: 1px solid #ddd;
+      }
+      .dropdown-content input {
+          width: 100%;
+          padding: 8px;
+          box-sizing: border-box;
+      }
+      .dropdown-content div {
+          padding: 8px;
+          cursor: pointer;
+      }
+      .dropdown-content div:hover {
+          background-color: #f1f1f1;
+      }
+      .quantity-controls {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      .quantity-button {
+          cursor: pointer;
+          margin: 0 5px;
+          padding: 2px 5px;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+      }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
@@ -50,7 +93,7 @@ include 'includes/db.php';
          </div>
          <div class="col-sm-6">
            <ol class="breadcrumb float-sm-right">
-             <li class="breadcrumb-item"><a href="#">Home</a></li>
+             <li class="breadcrumb-item"><a href="./">Home</a></li>
              <li class="breadcrumb-item active">Sales</li>
            </ol>
          </div>
@@ -61,160 +104,82 @@ include 'includes/db.php';
      </div><!-- /.container-fluid -->
    </section>
 
-
    <!-- Main content -->
    <section class="content">
-     <div class="container-fluid">
-       <!-- SELECT2 EXAMPLE -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-primary">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">Add Products</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="inputStatus">Select Product</label>
+                            <div class="dropdown">
+                                <input type="text" id="product-search" placeholder="Search products..." />
+                                <div id="product-dropdown" class="dropdown-content">
+                                    <?php foreach ($products as $product): ?>
+                                        <div class="product-item" data-id="<?= $product['product_id'] ?>" data-price="<?= $product['selling_price'] ?>" data-barcode="<?= $product['barcode'] ?>" data-description="<?= $product['description'] ?>">
+                                            <?= $product['product_name'] ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEstimatedBudget">Total</label>
+                            <input type="number" id="total-amount" class="form-control" placeholder="Total" readonly>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
 
-
-       <div class="row">
-
-         <!-- left column -->
-         <div class="col-md-12 col-lg-12">
-            <div class="card card-primary">
-             
-           <!-- My Table -->
-             <div class="card-body">
-             <h3 class="card-title mb-3">Added Products</h3>
-               <table id="example2" class="table table-bordered table-hover">
-                 <thead>
-                 <tr>
-                   <th>Sales Id</th>
-                   <th>Item Name</th>
-                   <th>Price</th>
-                   <th>Quantity</th>
-                   <th>Total</th>
-                   <th>Action</th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                 <tr>
-                   <td>Trident</td>
-                   <td>Internet
-                     Explorer 4.0
-                   </td>
-                   <td>Win 95+</td>
-                   <td>
-                   <!-- <i class="fas fa-minus"></i> -->
-                   4
-                   <!-- <i class="fas fa-plus"></i> -->
-                   </td>
-                   <td>X</td>
-                   <td>X</td>
-                 </tr>
-                 <tr>
-                   <td>Trident</td>
-                   <td>Internet
-                     Explorer 5.0
-                   </td>
-                   <td>Win 95+</td>
-                   <td>5</td>
-                   <td>C</td>
-                   <td>C</td>
-                 </tr>
-                 <tr>
-                   <td>Trident</td>
-                   <td>Internet
-                     Explorer 5.5
-                   </td>
-                   <td>Win 95+</td>
-                   <td>5.5</td>
-                   <td>A</td>
-                   <td>A</td>
-                 </tr>
-                 
-                 </tbody>
-                 
-               </table>
-             </div>
-           <!-- End Table -->
-           </div>
-
-           <section class="content">
-     <div class="row">
-       <div class="col-md-6">
-       <div class="card card-primary">
-               <div class="card-header border-0">
-                 <h3 class="card-title">Add Products</h3>
-                 
-               </div>
-               <div class="card-body">
-                 <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-
-                   <div class="form-group">
-                     <label for="inputStatus">Select Product</label>
-                     <select id="inputStatus" class="form-control custom-select">
-                       <option selected disabled>-select product-</option>
-                       <option>On Hold</option>
-                       <option>Canceled</option>
-                       <option>Success</option>
-                     </select>
-                   </div>
-                   <div class="form-group p-1">
-                     <label for="inputEstimatedBudget">Barcode</label>
-                     <input type="number" id="inputEstimatedBudget" class="form-control" placeholder="barcode">
-                   </div>
-                   <div class="form-group">
-                     <label for="inputEstimatedBudget">Amount Paid</label>
-                     <input type="number" id="inputEstimatedBudget" class="form-control" placeholder="Amount">
-                   </div>
-                   
-                 </div>
-                 <!-- /.d-flex -->                  
-               </div>
-             </div>
-         <!-- /.card -->
-             <div class="form-group">
-               <label for="inputEstimatedBudget">Total</label>
-               <input type="number" id="inputEstimatedBudget" class="form-control" placeholder="Total">
-             </div>
-       </div>
-       <div class="col-md-6">
-         <div class="card card-secondary">
-           <div class="card-header">
-             <h3 class="card-title">Customer Details</h3>
-
-             <div class="card-tools">
-               <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                 <!-- <i class="fas fa-minus"></i> -->
-               </button>
-             </div>
-           </div>
-           <div class="card-body">
-             <div class="form-group">
-               <label for="inputEstimatedBudget">Customer Details</label>
-               <input type="number" id="inputEstimatedBudget" class="form-control">
-             </div>
-             <div class="form-group">
-               <label for="inputSpentBudget">Commision</label>
-               <input type="number" id="inputSpentBudget" class="form-control">
-             </div>
-           </div>
-           <!-- /.card-body -->
-         </div>
-         <!-- /.card -->
-       </div>
-     </div>
-     <div class="row">
-       <div class="col-12">
-         <a href="#" class="btn btn-secondary">Generate</a>
-         <input type="submit" value="Update" class="btn btn-success float-right">
-       </div>
-     </div>
-   </section>
-
-           
-         </div>
-
-
-       </div>
-     </div>
+            <div class="col-md-8">
+                <div class="card card-primary">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">Selected Products</h3>
+                    </div>
+                    <!-- My Table -->
+                    <div class="card-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Item Id</th>
+                                    <th>Item Name</th>
+                                    <th>Barcode</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="details-body">
+                                <tr id="details-row">
+                                    <td colspan="7">Select a product to see the details</td>
+                                </tr>
+                            </tbody>
+                            <!-- <tfoot>
+                                <tr>
+                                    <td colspan="5" style="text-align:right;"><strong>Grand Total:</strong></td>
+                                    <td colspan="2" id="grand-total">0.00</td>
+                                </tr>
+                            </tfoot> -->
+                        </table>
+                    </div>
+                    <!-- End Table -->
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <a href="#" class="btn btn-success float-right">Payment</a>
+            </div>
+        </div>
+    </div>
    </section>
    <!-- /.content -->
-
-   
-
  </div>
  <!-- /.content-wrapper -->
 
@@ -226,6 +191,116 @@ include 'includes/db.php';
 </div>
 
 <?php include "includes/scripts.php" ?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Show dropdown content on input focus
+        $('#product-search').on('focus', function() {
+            $('#product-dropdown').show();
+        });
+
+        // Filter products based on search input
+        $('#product-search').on('keyup', function() {
+            var searchValue = $(this).val().toLowerCase();
+            $('#product-dropdown .product-item').each(function() {
+                var productName = $(this).text().toLowerCase();
+                $(this).toggle(productName.indexOf(searchValue) > -1);
+            });
+        });
+
+        // Select product from dropdown
+        $(document).on('click', '.product-item', function() {
+            var productId = $(this).data('id');
+            var productPrice = parseFloat($(this).data('price'));
+            var productName = $(this).text();
+            var productBarcode = $(this).data('barcode');
+            var productDescription = $(this).data('description');
+
+            // Hide dropdown after selection
+            $('#product-dropdown').hide();
+            $('#product-search').val('');
+
+            // Check if product already exists
+            var existingRow = $('#details-body tr[data-id="' + productId + '"]');
+            if (existingRow.length === 0) {
+                // If product does not exist, add a new row
+                $('#details-body').append(`
+                    <tr data-id="${productId}">
+                        <td>${productId}</td>
+                        <td>${productName}</td>
+                        <td>${productBarcode}</td>
+                        <td>${productPrice.toFixed(2)}</td>
+                        <td>
+                            <div class="quantity-controls">
+                                <button class="quantity-button minus">-</button>
+                                <span class="quantity">1</span>
+                                <button class="quantity-button plus">+</button>
+                            </div>
+                        </td>
+                        <td class="total">${productPrice.toFixed(2)}</td>
+                        <td class="remove-item"><i class="fas fa-trash" title="Remove item" style="color: grey; cursor: pointer;"></i></td>
+                    </tr>
+                `);
+            } else {
+                // If product already exists, increment the quantity
+                var quantitySpan = existingRow.find('.quantity');
+                var currentQuantity = parseInt(quantitySpan.text());
+                quantitySpan.text(currentQuantity + 1);
+                updateTotal(existingRow, productPrice);
+            }
+            updateGrandTotal();
+        });
+
+        // Increase or decrease quantity
+        $(document).on('click', '.quantity-button', function() {
+            var button = $(this);
+            var row = button.closest('tr');
+            var quantitySpan = row.find('.quantity');
+            var currentQuantity = parseInt(quantitySpan.text());
+            var productPrice = parseFloat(row.find('td:eq(3)').text());
+            
+            if (button.hasClass('plus')) {
+                quantitySpan.text(currentQuantity + 1);
+            } else if (button.hasClass('minus') && currentQuantity > 1) {
+                quantitySpan.text(currentQuantity - 1);
+            }
+
+            updateTotal(row, productPrice);
+            updateGrandTotal();
+        });
+
+        // Remove item from selected products
+        $(document).on('click', '.remove-item', function() {
+            $(this).closest('tr').remove();
+            updateGrandTotal();
+        });
+
+        // Update total for a row
+        function updateTotal(row, price) {
+            var quantity = parseInt(row.find('.quantity').text());
+            var total = price * quantity;
+            row.find('.total').text(total.toFixed(2));
+        }
+
+        // Update grand total
+        function updateGrandTotal() {
+            var grandTotal = 0;
+            $('#details-body .total').each(function() {
+                grandTotal += parseFloat($(this).text());
+            });
+            $('#grand-total').text(grandTotal.toFixed(2));
+            $('#total-amount').val(grandTotal.toFixed(2));
+        }
+
+        // Hide dropdown if clicked outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.dropdown').length) {
+                $('#product-dropdown').hide();
+            }
+        });
+    });
+</script>
 </body>
 </html>
 
