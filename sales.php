@@ -190,9 +190,33 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
   <?php include "includes/footer.php" ?>
 </div>
 
-<?php include "includes/scripts.php" ?>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Cash Payment Modal -->
+<div class="modal fade" id="cashPaymentModal" tabindex="-1" aria-labelledby="cashPaymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cashPaymentModalLabel">Cash Payment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Confirm your cash payment for the following items:</p>
+        <div id="cashPaymentItems"></div>
+        <p><strong>Total Amount:</strong> Ksh <span id="cashTotalAmount"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmCashPayment" class="btn btn-success">Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<?php include "includes/scripts.php" ?>
 <script>
     $(document).ready(function() {
         // Show dropdown content on input focus
@@ -299,7 +323,66 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 $('#product-dropdown').hide();
             }
         });
+
+
+         // Trigger payment modal and fill details
+        $('.btn-success.float-right[href="#"]').on('click', function(e) {
+        e.preventDefault();
+        let totalAmount = $('#total-amount').val();
+        let itemDetails = '';
+
+        $('#details-body tr').each(function() {
+            let productName = $(this).find('td:eq(1)').text();
+            let quantity = $(this).find('.quantity').text();
+            let total = $(this).find('.total').text();
+            itemDetails += `<p>${productName} (x${quantity}): Ksh ${total}</p>`;
+        });
+
+        $('#cashPaymentItems').html(itemDetails);
+        $('#cashTotalAmount').text(totalAmount);
+        $('#cashPaymentModal').modal('show');
     });
+
+    // Confirm Cash Payment
+    $('#confirmCashPayment').on('click', function() {
+        let totalAmount = $('#total-amount').val();
+        let discountApplied = 0;  // Adjust if discounts are available
+        let taxApplied = 0;       // Adjust if taxes are applied
+        let paymentMethod = 'Cash';
+
+        // Collect product details for receipt and database entry
+let products = [];
+$('#details-body tr').each(function() {
+    let productId = $(this).data('id');
+    let productName = $(this).find('td:eq(1)').text();
+    let quantity = parseInt($(this).find('.quantity').text());
+    let price = parseFloat($(this).find('td:eq(3)').text());
+
+    // Check if all required fields are correctly retrieved
+    console.log({
+        productId,
+        productName,
+        quantity,
+        price
+    });
+
+    // Add to products array only if all fields are present
+    if (productId && productName && !isNaN(quantity) && !isNaN(price)) {
+        products.push({ productId, productName, quantity, price });
+    } else {
+        console.error("Missing required product fields", {
+            productId,
+            productName,
+            quantity,
+            price
+        });
+    }
+});
+
+    });
+    });
+
+
 </script>
 </body>
 </html>
