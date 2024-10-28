@@ -36,14 +36,21 @@ if (isset($_POST['add'])) {
         move_uploaded_file($image_tmp, $image_path);
     }
 
-    // Insert data into database
-    $query = "INSERT INTO products (product_name, category_id, barcode, description, cost_price, selling_price, quantity_available, minimum_stock_level, supplier_id, image_path)
-              VALUES ('$product_name', '$category_id', '$barcode', '$description', '$cost_price', '$selling_price', '$quantity_available', '$minimum_stock_level', '$supplier_id', '$image_path')";
-
-    if (mysqli_query($conn, $query)) {
-        echo "<script>alert('Product added successfully!');</script>";
+    // Validate required fields
+    if (!$product_name || !$category_id || !$supplier_id) {
+        $_SESSION['error'] = "Please fill out all required fields.";
     } else {
-        echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
+        // Insert data into database
+        $query = "INSERT INTO products (product_name, category_id, barcode, description, cost_price, selling_price, quantity_available, minimum_stock_level, supplier_id, image_path)
+                  VALUES ('$product_name', '$category_id', '$barcode', '$description', '$cost_price', '$selling_price', '$quantity_available', '$minimum_stock_level', '$supplier_id', '$image_path')";
+
+        if (mysqli_query($conn, $query)) {
+            $_SESSION['success'] = "Product added successfully!";
+            header("Location: add-product.php"); // Redirect to avoid form resubmission
+            exit();
+        } else {
+            $_SESSION['error'] = "Error: " . mysqli_error($conn);
+        }
     }
 }
 ?>
@@ -92,13 +99,31 @@ if (isset($_POST['add'])) {
             </ol>
           </div>
         </div>
+
+        <!-- Display error or success messages -->
+        <?php if (isset($_SESSION['error'])): ?>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['success'])): ?>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <?php endif; ?>
       </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <!-- Info boxes -->
         <div class="row">
           <div class="col-12 col-sm-10 col-md-2">
           </div>
@@ -118,9 +143,9 @@ if (isset($_POST['add'])) {
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Select Category</label>
+                    <label>Select Category *</label>
                     <select class="form-control select2" name="category_id" style="width: 100%;">
-                      <option selected="selected">-select-</option>
+                      <option value="">-select-</option>
                       <?php while ($row= mysqli_fetch_assoc($categories)): ?>
                         <option value="<?php echo $row['category_id']; ?>"><?php echo $row['category_name']; ?></option>
                       <?php endwhile; ?>
@@ -130,16 +155,16 @@ if (isset($_POST['add'])) {
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="product_name">Product Name</label>
-                      <input type="text" class="form-control" name="product_name" autofocus="" placeholder="Enter Name">
+                      <label for="product_name">Product Name *</label>
+                      <input type="text" class="form-control" name="product_name" autofocus="" placeholder="Enter Name" required>
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Select Supplier</label>
+                    <label>Select Supplier *</label>
                     <select class="form-control select2" name="supplier_id" style="width: 100%;">
-                      <option selected="selected">-select-</option>
+                      <option value="">-select-</option>
                       <?php while ($row = mysqli_fetch_assoc($suppliers)): ?>
                         <option value="<?php echo $row['supplier_id']; ?>"><?php echo $row['supplier_name']; ?></option>
                       <?php endwhile; ?>
@@ -149,22 +174,22 @@ if (isset($_POST['add'])) {
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="barcode">Barcode*</label>
+                      <label for="barcode">Barcode</label>
                       <input type="text" class="form-control" name="barcode" autofocus="" placeholder="Enter barcode">
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="cost_price">Buying Price</label>
-                      <input type="number" min="0" class="form-control" name="cost_price" autofocus="" placeholder="Enter Buying Price">
+                      <label for="cost_price">Buying Price *</label>
+                      <input type="number" min="0" class="form-control" name="cost_price" autofocus="" placeholder="Enter Buying Price" required>
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="selling_price">Selling Price</label>
-                      <input type="number" min="0" class="form-control" name="selling_price" autofocus="" placeholder="Enter Selling Price">
+                      <label for="selling_price">Selling Price *</label>
+                      <input type="number" min="0" class="form-control" name="selling_price" autofocus="" placeholder="Enter Selling Price" required>
                   </div>
                 </div>
 
@@ -184,15 +209,15 @@ if (isset($_POST['add'])) {
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="quantity_available">Counter Quantity</label>
-                      <input type="number" min="0" class="form-control" name="quantity_available" autofocus="" placeholder="Enter counter quantity">
+                      <label for="quantity_available">Counter Quantity *</label>
+                      <input type="number" min="0" class="form-control" name="quantity_available" autofocus="" placeholder="Enter counter quantity" required>
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="minimum_stock_level">Store Quantity</label>
-                      <input type="number" min="0" class="form-control" name="minimum_stock_level" autofocus="" placeholder="Enter Store Quantity">
+                      <label for="minimum_stock_level">Store Quantity *</label>
+                      <input type="number" min="0" class="form-control" name="minimum_stock_level" autofocus="" placeholder="Enter Store Quantity" required>
                   </div>
                 </div>
 
@@ -217,11 +242,6 @@ if (isset($_POST['add'])) {
             </form>
           </div>
         </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-12">
           </div>
         </div>
       

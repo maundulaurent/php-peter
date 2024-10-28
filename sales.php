@@ -218,115 +218,114 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 <?php include "includes/scripts.php" ?>
 <script>
-    $(document).ready(function() {
-        // Show dropdown content on input focus
-        $('#product-search').on('focus', function() {
-            $('#product-dropdown').show();
+   $(document).ready(function() {
+    // Show dropdown content on input focus
+    $('#product-search').on('focus', function() {
+        $('#product-dropdown').show();
+    });
+
+    // Filter products based on search input
+    $('#product-search').on('keyup', function() {
+        var searchValue = $(this).val().toLowerCase();
+        $('#product-dropdown .product-item').each(function() {
+            var productName = $(this).text().toLowerCase();
+            $(this).toggle(productName.indexOf(searchValue) > -1);
         });
+    });
 
-        // Filter products based on search input
-        $('#product-search').on('keyup', function() {
-            var searchValue = $(this).val().toLowerCase();
-            $('#product-dropdown .product-item').each(function() {
-                var productName = $(this).text().toLowerCase();
-                $(this).toggle(productName.indexOf(searchValue) > -1);
-            });
-        });
+    // Select product from dropdown
+    $(document).on('click', '.product-item', function() {
+        var productId = $(this).data('id');
+        var productPrice = parseFloat($(this).data('price'));
+        var productName = $(this).text();
+        var productBarcode = $(this).data('barcode');
+        var productDescription = $(this).data('description');
 
-        // Select product from dropdown
-        $(document).on('click', '.product-item', function() {
-            var productId = $(this).data('id');
-            var productPrice = parseFloat($(this).data('price'));
-            var productName = $(this).text();
-            var productBarcode = $(this).data('barcode');
-            var productDescription = $(this).data('description');
+        // Hide dropdown after selection
+        $('#product-dropdown').hide();
+        $('#product-search').val('');
 
-            // Hide dropdown after selection
-            $('#product-dropdown').hide();
-            $('#product-search').val('');
-
-            // Check if product already exists
-            var existingRow = $('#details-body tr[data-id="' + productId + '"]');
-            if (existingRow.length === 0) {
-                // If product does not exist, add a new row
-                $('#details-body').append(`
-                    <tr data-id="${productId}">
-                        <td>${productId}</td>
-                        <td>${productName}</td>
-                        <td>${productBarcode}</td>
-                        <td>${productPrice.toFixed(2)}</td>
-                        <td>
-                            <div class="quantity-controls">
-                                <button class="quantity-button minus">-</button>
-                                <span class="quantity">1</span>
-                                <button class="quantity-button plus">+</button>
-                            </div>
-                        </td>
-                        <td class="total">${productPrice.toFixed(2)}</td>
-                        <td class="remove-item"><i class="fas fa-trash" title="Remove item" style="color: grey; cursor: pointer;"></i></td>
-                    </tr>
-                `);
-            } else {
-                // If product already exists, increment the quantity
-                var quantitySpan = existingRow.find('.quantity');
-                var currentQuantity = parseInt(quantitySpan.text());
-                quantitySpan.text(currentQuantity + 1);
-                updateTotal(existingRow, productPrice);
-            }
-            updateGrandTotal();
-        });
-
-        // Increase or decrease quantity
-        $(document).on('click', '.quantity-button', function() {
-            var button = $(this);
-            var row = button.closest('tr');
-            var quantitySpan = row.find('.quantity');
+        // Check if product already exists
+        var existingRow = $('#details-body tr[data-id="' + productId + '"]');
+        if (existingRow.length === 0) {
+            // If product does not exist, add a new row
+            $('#details-body').append(`
+                <tr data-id="${productId}">
+                    <td>${productId}</td>
+                    <td>${productName}</td>
+                    <td>${productBarcode}</td>
+                    <td>${productPrice.toFixed(2)}</td>
+                    <td>
+                        <div class="quantity-controls">
+                            <button class="quantity-button minus">-</button>
+                            <span class="quantity">1</span>
+                            <button class="quantity-button plus">+</button>
+                        </div>
+                    </td>
+                    <td class="total">${productPrice.toFixed(2)}</td>
+                    <td class="remove-item"><i class="fas fa-trash" title="Remove item" style="color: grey; cursor: pointer;"></i></td>
+                </tr>
+            `);
+        } else {
+            // If product already exists, increment the quantity
+            var quantitySpan = existingRow.find('.quantity');
             var currentQuantity = parseInt(quantitySpan.text());
-            var productPrice = parseFloat(row.find('td:eq(3)').text());
-            
-            if (button.hasClass('plus')) {
-                quantitySpan.text(currentQuantity + 1);
-            } else if (button.hasClass('minus') && currentQuantity > 1) {
-                quantitySpan.text(currentQuantity - 1);
-            }
+            quantitySpan.text(currentQuantity + 1);
+            updateTotal(existingRow, productPrice);
+        }
+        updateGrandTotal();
+    });
 
-            updateTotal(row, productPrice);
-            updateGrandTotal();
-        });
-
-        // Remove item from selected products
-        $(document).on('click', '.remove-item', function() {
-            $(this).closest('tr').remove();
-            updateGrandTotal();
-        });
-
-        // Update total for a row
-        function updateTotal(row, price) {
-            var quantity = parseInt(row.find('.quantity').text());
-            var total = price * quantity;
-            row.find('.total').text(total.toFixed(2));
+    // Increase or decrease quantity
+    $(document).on('click', '.quantity-button', function() {
+        var button = $(this);
+        var row = button.closest('tr');
+        var quantitySpan = row.find('.quantity');
+        var currentQuantity = parseInt(quantitySpan.text());
+        var productPrice = parseFloat(row.find('td:eq(3)').text());
+        
+        if (button.hasClass('plus')) {
+            quantitySpan.text(currentQuantity + 1);
+        } else if (button.hasClass('minus') && currentQuantity > 1) {
+            quantitySpan.text(currentQuantity - 1);
         }
 
-        // Update grand total
-        function updateGrandTotal() {
-            var grandTotal = 0;
-            $('#details-body .total').each(function() {
-                grandTotal += parseFloat($(this).text());
-            });
-            $('#grand-total').text(grandTotal.toFixed(2));
-            $('#total-amount').val(grandTotal.toFixed(2));
-        }
+        updateTotal(row, productPrice);
+        updateGrandTotal();
+    });
 
-        // Hide dropdown if clicked outside
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('.dropdown').length) {
-                $('#product-dropdown').hide();
-            }
+    // Remove item from selected products
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('tr').remove();
+        updateGrandTotal();
+    });
+
+    // Update total for a row
+    function updateTotal(row, price) {
+        var quantity = parseInt(row.find('.quantity').text());
+        var total = price * quantity;
+        row.find('.total').text(total.toFixed(2));
+    }
+
+    // Update grand total
+    function updateGrandTotal() {
+        var grandTotal = 0;
+        $('#details-body .total').each(function() {
+            grandTotal += parseFloat($(this).text());
         });
+        $('#grand-total').text(grandTotal.toFixed(2));
+        $('#total-amount').val(grandTotal.toFixed(2));
+    }
 
+    // Hide dropdown if clicked outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('#product-dropdown').hide();
+        }
+    });
 
-         // Trigger payment modal and fill details
-        $('.btn-success.float-right[href="#"]').on('click', function(e) {
+    // Trigger payment modal and fill details
+    $('.btn-success.float-right[href="#"]').on('click', function(e) {
         e.preventDefault();
         let totalAmount = $('#total-amount').val();
         let itemDetails = '';
@@ -343,44 +342,38 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
         $('#cashPaymentModal').modal('show');
     });
 
-    // Confirm Cash Payment
+    // Confirm Cash Payment - AJAX call to update product quantities
     $('#confirmCashPayment').on('click', function() {
-        let totalAmount = $('#total-amount').val();
-        let discountApplied = 0;  // Adjust if discounts are available
-        let taxApplied = 0;       // Adjust if taxes are applied
-        let paymentMethod = 'Cash';
-
-        // Collect product details for receipt and database entry
-let products = [];
-$('#details-body tr').each(function() {
-    let productId = $(this).data('id');
-    let productName = $(this).find('td:eq(1)').text();
-    let quantity = parseInt($(this).find('.quantity').text());
-    let price = parseFloat($(this).find('td:eq(3)').text());
-
-    // Check if all required fields are correctly retrieved
-    console.log({
-        productId,
-        productName,
-        quantity,
-        price
-    });
-
-    // Add to products array only if all fields are present
-    if (productId && productName && !isNaN(quantity) && !isNaN(price)) {
-        products.push({ productId, productName, quantity, price });
-    } else {
-        console.error("Missing required product fields", {
-            productId,
-            productName,
-            quantity,
-            price
+        let products = [];
+        $('#details-body tr').each(function() {
+            let productId = $(this).data('id');
+            let quantity = parseInt($(this).find('.quantity').text());
+            products.push({ productId, quantity });
         });
-    }
+
+        $.ajax({
+            url: 'fnc/process_sale.php',
+            type: 'POST',
+            dataType: 'json',
+            data: { products: products },
+            success: function(response) {
+                console.log("Raw response:", response); // Log raw response for debugging
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Reload to refresh product quantities
+                } else {
+                    alert("Error processing sale:\n" + response.errors.join("\n"));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", error, xhr.responseText); // Log error details
+                alert("An error occurred: " + error);
+            }
+        });
+
+    });
 });
 
-    });
-    });
 
 
 </script>
