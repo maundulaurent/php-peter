@@ -29,6 +29,7 @@
               <i class="nav-icon fas fa-calendar-alt"></i>
               <p>
                 New Sale
+                <span class="badge badge-info right">main</span>
               </p>
             </a>
           </li>
@@ -40,7 +41,7 @@
               <i class="nav-icon fas fa-calendar-alt"></i>
               <p>
                 Add New Product
-                <span class="badge badge-info right">2</span>
+                
               </p>
             </a>
           </li>
@@ -49,15 +50,6 @@
               <i class="nav-icon far fa-image"></i>
               <p>
                 All Products
-              </p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Inventory Tracking
               </p>
             </a>
           </li>
@@ -80,7 +72,7 @@
             </a>
           </li>
 
-          <li class="nav-header">Inventory Management</li>
+          <!-- <li class="nav-header">Inventory Management</li>
             <li class="nav-item">
               <a href="" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
@@ -88,31 +80,7 @@
                   Stock Entry
                 </p>
               </a>
-            </li>
-            <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
-                <p>
-                  Stock Adjustment
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
-                <p>
-                  Stock Transfers
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
-                <p>
-                  Inventory Reports
-                </p>
-              </a>
-            </li>
+            </li> -->
 
           <li class="nav-header">Supplier Management</li>
           <li class="nav-item">
@@ -128,22 +96,6 @@
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Supplier List
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Supplier Orders
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Supplier Payment
               </p>
             </a>
           </li>
@@ -183,63 +135,14 @@
                 </p>
               </a>
             </li>
-          <li class="nav-header">Customer Management</li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Customer List
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Customer Groups
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Loyalty Program
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Customer History
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Inventory Tracking
-                </p>
-              </a>
-            </li>
 
 
-          <li class="nav-header">Employee Management</li>
+          <li class="nav-header">User Management</li>
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Employee List
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Employee List
+                Users List
               </p>
             </a>
           </li>
@@ -300,31 +203,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Store Information
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Payment Settings
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Discounts & Coupons
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
-              <p>
-                Backup & Restore
+                Account Settings
               </p>
             </a>
           </li>
@@ -336,7 +215,6 @@
               </p>
             </a>
           </li>
-          <li class="nav-header">Cashier Interface</li>
           
           
         </ul>

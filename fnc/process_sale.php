@@ -1,68 +1,56 @@
 <?php
-session_start();
-include '../includes/db.php';
+// Include database connection file
+require_once 'db_connection.php'; // Adjust this path as necessary
 
-// Enable error reporting to help identify the problem
-ini_set('display_errors', 0); // Don't display errors to user
+// Enable error reporting
 error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', '../error_log.log'); // Log errors to error_log.log in project root
+ini_set('display_errors', 1);
 
-header('Content-Type: application/json'); // Ensure JSON response header
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if the products array is set in the POST request
+    if (isset($_POST['products']) && is_array($_POST['products'])) {
+        // Retrieve the products from the POST data
+        $products = $_POST['products'];
 
-$response = ['success' => true, 'message' => 'Sale processed successfully', 'errors' => []];
-$products = $_POST['products'] ?? [];
-
-// Check if request is valid
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    $response['success'] = false;
-    $response['message'] = 'Invalid request';
-    echo json_encode($response);
-    exit();
-}
-
-// Begin sale processing
-foreach ($products as $product) {
-    $productId = $product['productId'];
-    $quantitySold = $product['quantity'];
-
-    // Fetch current stock and price
-    $query = "SELECT quantity_available, selling_price FROM products WHERE product_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $productId);
-    $stmt->execute();
-    $stmt->bind_result($currentQuantity, $sellingPrice);
-    $stmt->fetch();
-    $stmt->close();
-
-    // Check stock and proceed with sale if stock is sufficient
-    if ($currentQuantity >= $quantitySold) {
-        $newQuantity = $currentQuantity - $quantitySold;
-        $updateQuery = "UPDATE products SET quantity_available = ? WHERE product_id = ?";
-        $updateStmt = $conn->prepare($updateQuery);
-        $updateStmt->bind_param("ii", $newQuantity, $productId);
-        if (!$updateStmt->execute()) {
-            $response['success'] = false;
-            $response['errors'][] = "Failed to update product ID: $productId";
+        // Prepare the SQL statement
+        $stmt = $conn->prepare("INSERT INTO sales (product_id, quantity) VALUES (?, ?)");
+        
+        if (!$stmt) {
+            echo json_encode(["error" => "SQL Prepare Error: " . $conn->error]);
+            exit;
         }
-        $updateStmt->close();
 
-        // Record the sale
-        $totalPrice = $sellingPrice * $quantitySold;
-        $saleQuery = "INSERT INTO sales (product_id, quantity_sold, total_price, sale_date) VALUES (?, ?, ?, NOW())";
-        $saleStmt = $conn->prepare($saleQuery);
-        $saleStmt->bind_param("iid", $productId, $quantitySold, $totalPrice);
-        if (!$saleStmt->execute()) {
-            $response['success'] = false;
-            $response['errors'][] = "Failed to record sale for product ID: $productId";
+        // Loop through each product and bind parameters
+        foreach ($products as $product) {
+            // Ensure productId and quantity are set
+            if (isset($product['productId']) && isset($product['quantity'])) {
+                $productId = $product['productId'];
+                $quantity = $product['quantity'];
+
+                // Bind parameters to the prepared statement
+                if (!$stmt->bind_param("ii", $productId, $quantity)) {
+                    echo json_encode(["error" => "Bind Param Error: " . $stmt->error]);
+                    continue; // Skip to the next product
+                }
+
+                // Execute the statement
+                if (!$stmt->execute()) {
+                    echo json_encode(["error" => "Execution Error: " . $stmt->error]);
+                }
+            } else {
+                echo json_encode(["error" => "Product data is incomplete for a product."]);
+            }
         }
-        $saleStmt->close();
+
+        // Close the prepared statement
+        $stmt->close();
     } else {
-        $response['success'] = false;
-        $response['errors'][] = "Insufficient stock for product ID: $productId";
+        echo json_encode(["error" => "No products found in the request."]);
     }
+} else {
+    echo json_encode(["error" => "Invalid request method."]);
 }
 
-// Return JSON response
-echo json_encode($response);
+// Close the database connection
+$conn->close();
 ?>
