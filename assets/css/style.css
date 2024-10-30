@@ -1,0 +1,53 @@
+/* Style adjustments for POS layout */
+.card-header {
+    font-weight: bold;
+  }
+  
+  .table td, .table th {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .card-body p {
+    margin: 0;
+  }
+  
+  .btn-info {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+  }
+
+  .btn-bl { background-color: #3b83bd; }
+  .btn-plus { background-color: #8bc34a; }
+
+  .btn-info:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+  
+  .btn-light {
+    border: 1px solid #ced4da;
+  }
+  
+  .btn-lg {
+    padding: 1.5rem;
+    font-size: 1.2rem;
+  }
+  .product-btn {
+    height: 70px;
+    font-size: 1rem;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+/* Total Card */
+.total-card {
+    /* background-color: #3a3f48; */
+    background-color: #ffffff;
+    /* color: #ffffff; */
+    color: #000;
+    font-weight: bold;
+    }
