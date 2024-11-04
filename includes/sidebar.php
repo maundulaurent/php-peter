@@ -130,7 +130,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="receipts" class="nav-link">
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Receipts & Invoices
@@ -174,7 +174,7 @@
           </li> -->
          
 
-          <li class="nav-header">Reports</li>
+          <!-- <li class="nav-header">Reports</li>
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
@@ -182,23 +182,23 @@
                 Sales Reports
               </p>
             </a>
-          </li>
-          <li class="nav-item">
+          </li> -->
+          <!-- <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Inventory Reports
               </p>
             </a>
-          </li>
-          <li class="nav-item">
+          </li> -->
+          <!-- <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Customer Reports
               </p>
             </a>
-          </li>
+          </li> -->
 
           <li class="nav-header">Settings</li>
           <li class="nav-item">
@@ -209,14 +209,14 @@
               </p>
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Notifications
               </p>
             </a>
-          </li>
+          </li> -->
           
           
         </ul>
