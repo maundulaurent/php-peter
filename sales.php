@@ -47,7 +47,7 @@ if (!isset($_SESSION['user_id'])) {
   <!-- Navbar -->
  <?php include "includes/navbar.php" ?>
 
-<div class="container-fluid mt-2">
+<div class="container-fluid mt-5">
   
   <div class="row">
     <!-- Customer Info -->
@@ -71,8 +71,8 @@ if (!isset($_SESSION['user_id'])) {
           <p class="text-muted">stocks</p>
           <div class="d-flex justify-content-between">
             <p>Store: <strong>0.00</strong></p>
-            <p>Counters: <strong>4200</strong></p>
-            <p>Sold today: <strong>19</strong></p>
+            <p>Counters: <strong>0.00</strong></p>
+            <p>Sold today: <strong>- -</strong></p>
           </div>
         </div>
       </div>
