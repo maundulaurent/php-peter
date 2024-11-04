@@ -2,10 +2,10 @@
 session_start();
 include 'includes/db.php'; // Database connection file
 
-// Fetch users from the database
-$query = "SELECT user_id, username, first_name, role, password, date_added FROM users";
+// Fetch sales from the database
+$query = "SELECT sale_id, sale_date, cashier_id, total_sale_amount, payment_method, discount_applied, tax_applied, sale_status FROM sales";
 $result = mysqli_query($conn, $query);
-$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$sales = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +13,7 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>All Users | Init POS</title>
+  <title>All Sales | Init POS</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -42,12 +42,12 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h3>All Users</h3>
+            <h3>All Sales</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="./">Home</a></li>
-              <li class="breadcrumb-item active">All Users</li>
+              <li class="breadcrumb-item active">All Sales</li>
             </ol>
           </div>
         </div>
@@ -72,34 +72,40 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">All Users List</h3>
+                <h3 class="card-title">All Sales List</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>User ID</th>
-                      <th>Username</th>
-                      <th>First Name</th>
-                      <th>Role</th>
-                      <th>Date Added</th>
+                      <th>Sale ID</th>
+                      <th>Sale Date</th>
+                      <th>Cashier ID</th>
+                      <th>Total Sale Amount</th>
+                      <th>Payment Method</th>
+                      <th>Discount Applied</th>
+                      <th>Tax Applied</th>
+                      <th>Sale Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($users as $user): ?>
+                    <?php foreach ($sales as $sale): ?>
                     <tr>
-                      <td><?php echo htmlspecialchars($user['user_id']); ?></td>
-                      <td><?php echo htmlspecialchars($user['username']); ?></td>
-                      <td><?php echo htmlspecialchars($user['first_name']); ?></td>
-                      <td><?php echo htmlspecialchars($user['role']); ?></td>
-                      <td><?php echo htmlspecialchars($user['date_added']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['sale_id']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['cashier_id']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['total_sale_amount']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['payment_method']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['discount_applied']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['tax_applied']); ?></td>
+                      <td><?php echo htmlspecialchars($sale['sale_status']); ?></td>
                       <td>
-                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="fillEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="fillEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)">
                           <i class="fas fa-edit"></i> 
                         </button>
-                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteId(<?php echo $user['user_id']; ?>)">
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteId(<?php echo $sale['sale_id']; ?>)">
                           <i class="fas fa-trash"></i> 
                         </button>
                       </td>
@@ -108,11 +114,14 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
                   </tbody>
                   <tfoot>
                     <tr>
-                      <th>User ID</th>
-                      <th>Username</th>
-                      <th>First Name</th>
-                      <th>Role</th>
-                      <th>Date Added</th>
+                      <th>Sale ID</th>
+                      <th>Sale Date</th>
+                      <th>Cashier ID</th>
+                      <th>Total Sale Amount</th>
+                      <th>Payment Method</th>
+                      <th>Discount Applied</th>
+                      <th>Tax Applied</th>
+                      <th>Sale Status</th>
                       <th>Actions</th>
                     </tr>
                   </tfoot>
@@ -136,30 +145,42 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
   <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="fnc/edit_user.php" method="post">
+        <form action="fnc/edit_sale.php" method="post">
           <div class="modal-header">
-            <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+            <h5 class="modal-title" id="editModalLabel">Edit Sale</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <input type="hidden" id="editUserId" name="user_id">
+            <input type="hidden" id="editSaleId" name="sale_id">
             <div class="form-group">
-              <label for="editUsername">Username</label>
-              <input type="text" class="form-control" id="editUsername" name="username" required>
+              <label for="editSaleDate">Sale Date</label>
+              <input type="text" class="form-control" id="editSaleDate" name="sale_date" required>
             </div>
             <div class="form-group">
-              <label for="editFirstName">First Name</label>
-              <input type="text" class="form-control" id="editFirstName" name="first_name" required>
+              <label for="editCashierId">Cashier ID</label>
+              <input type="text" class="form-control" id="editCashierId" name="cashier_id" required>
             </div>
             <div class="form-group">
-              <label for="editRole">Role</label>
-              <input type="text" class="form-control" id="editRole" name="role" required>
+              <label for="editTotalSaleAmount">Total Sale Amount</label>
+              <input type="text" class="form-control" id="editTotalSaleAmount" name="total_sale_amount" required>
             </div>
             <div class="form-group">
-              <label for="editPassword">Password</label>
-              <input type="password" class="form-control" id="editPassword" name="password">
+              <label for="editPaymentMethod">Payment Method</label>
+              <input type="text" class="form-control" id="editPaymentMethod" name="payment_method" required>
+            </div>
+            <div class="form-group">
+              <label for="editDiscountApplied">Discount Applied</label>
+              <input type="text" class="form-control" id="editDiscountApplied" name="discount_applied" required>
+            </div>
+            <div class="form-group">
+              <label for="editTaxApplied">Tax Applied</label>
+              <input type="text" class="form-control" id="editTaxApplied" name="tax_applied" required>
+            </div>
+            <div class="form-group">
+              <label for="editSaleStatus">Sale Status</label>
+              <input type="text" class="form-control" id="editSaleStatus" name="sale_status" required>
             </div>
           </div>
           <div class="modal-footer">
@@ -175,16 +196,16 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="fnc/delete_user.php" method="post">
+        <form action="fnc/delete_sale.php" method="post">
           <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
+            <h5 class="modal-title" id="deleteModalLabel">Delete Sale</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <input type="hidden" id="deleteUserId" name="user_id">
-            <p id="deleteMessage">Are you sure you want to delete this user?</p>
+            <input type="hidden" id="deleteSaleId" name="sale_id">
+            <p id="deleteMessage">Are you sure you want to delete this sale?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -234,17 +255,20 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
 
-    function fillEditModal(user) {
-      $('#editUserId').val(user.user_id);
-      $('#editUsername').val(user.username);
-      $('#editFirstName').val(user.first_name);
-      $('#editRole').val(user.role);
-      $('#editPassword').val(''); // Password should be kept empty for security
+    function fillEditModal(sale) {
+      $('#editSaleId').val(sale.sale_id);
+      $('#editSaleDate').val(sale.sale_date);
+      $('#editCashierId').val(sale.cashier_id);
+      $('#editTotalSaleAmount').val(sale.total_sale_amount);
+      $('#editPaymentMethod').val(sale.payment_method);
+      $('#editDiscountApplied').val(sale.discount_applied);
+      $('#editTaxApplied').val(sale.tax_applied);
+      $('#editSaleStatus').val(sale.sale_status);
     }
 
     function setDeleteId(id) {
-      $('#deleteUserId').val(id);
-      $('#deleteMessage').text(`Are you sure you want to delete user ID "${id}"?`);
+      $('#deleteSaleId').val(id);
+      $('#deleteMessage').text(`Are you sure you want to delete sale ID "${id}"?`);
     }
   </script>
 </div>

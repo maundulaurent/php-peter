@@ -55,19 +55,20 @@
           </li>
 
           <li class="nav-header">Category Management</li>
-          <li class="nav-item">
-            <a href="all-categories" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Product Categories
-              </p>
-            </a>
-          </li>
+          
           <li class="nav-item">
             <a href="add-category" class="nav-link">
               <i class="nav-icon fas fa-calendar-alt"></i>
               <p>
                 Add New Category
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="all-categories" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                All Categories
               </p>
             </a>
           </li>
@@ -92,26 +93,26 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="all-suppliers" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Supplier List
+                All Suppliers
               </p>
             </a>
           </li>
 
 
           <li class="nav-header">Sales Management</li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Create Sale
                 </p>
               </a>
-            </li>
+            </li> -->
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="all-sales" class="nav-link">
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Sales History
@@ -124,6 +125,7 @@
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Refunds
+                  <span class="badge badge-info right">coming soon</span>
                 </p>
               </a>
             </li>
@@ -139,22 +141,22 @@
 
           <li class="nav-header">User Management</li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="all-users" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Users List
+                All Users
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="roles" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Roles & Permissions
               </p>
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
@@ -169,7 +171,7 @@
                 Work Shifts
               </p>
             </a>
-          </li>
+          </li> -->
          
 
           <li class="nav-header">Reports</li>
@@ -200,7 +202,7 @@
 
           <li class="nav-header">Settings</li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="account-settings" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
                 Account Settings

@@ -5,6 +5,32 @@ if (!isset($_SESSION['user_id'])) {
   header('Location: login');
   exit();
 }
+
+// Database connection
+include 'includes/db.php';
+
+// Fetch total products
+$result = $conn->query("SELECT COUNT(*) AS total_products FROM products");
+$row = $result->fetch_assoc();
+$total_products = $row['total_products'];
+
+// Fetch total categories
+$result = $conn->query("SELECT COUNT(*) AS total_categories FROM categories");
+$row = $result->fetch_assoc();
+$total_categories = $row['total_categories'];
+
+// Fetch total sales
+$result = $conn->query("SELECT COUNT(*) AS total_sales FROM sales"); // Assuming 'sales' is your sales table
+$row = $result->fetch_assoc();
+$total_sales = $row['total_sales'];
+
+// Fetch total users
+$result = $conn->query("SELECT COUNT(*) AS total_users FROM users");
+$row = $result->fetch_assoc();
+$total_users = $row['total_users'];
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +95,7 @@ if (!isset($_SESSION['user_id'])) {
               <div class="info-box-content">
                 <span class="info-box-text">Total Products</span>
                 <span class="info-box-number">
-                  1020
+                  <?php echo $total_products; ?>
                 </span>
               </div>
               <!-- /.info-box-content -->
@@ -83,7 +109,7 @@ if (!isset($_SESSION['user_id'])) {
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Categories</span>
-                <span class="info-box-number">41</span>
+                <span class="info-box-number"><?php echo $total_categories; ?></span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -100,7 +126,7 @@ if (!isset($_SESSION['user_id'])) {
 
               <div class="info-box-content">
                 <span class="info-box-text">Sales</span>
-                <span class="info-box-number">760</span>
+                <span class="info-box-number"><?php echo $total_sales; ?></span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -113,7 +139,7 @@ if (!isset($_SESSION['user_id'])) {
 
               <div class="info-box-content">
                 <span class="info-box-text">Users</span>
-                <span class="info-box-number">20</span>
+                <span class="info-box-number"><?php echo $total_users; ?></span>
               </div>
               <!-- /.info-box-content -->
             </div>

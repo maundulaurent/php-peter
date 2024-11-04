@@ -2,10 +2,15 @@
 session_start();
 include 'includes/db.php'; // Database connection file
 
-// Fetch users from the database
-$query = "SELECT user_id, username, first_name, role, password, date_added FROM users";
-$result = mysqli_query($conn, $query);
-$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// Fetch admins from the database
+$query_admins = "SELECT user_id, username, first_name, role, date_added FROM users WHERE role = 'Admin'";
+$result_admins = mysqli_query($conn, $query_admins);
+$admins = mysqli_fetch_all($result_admins, MYSQLI_ASSOC);
+
+// Fetch other users from the database
+$query_users = "SELECT user_id, username, first_name, role, date_added FROM users WHERE role != 'Admin'";
+$result_users = mysqli_query($conn, $query_users);
+$other_users = mysqli_fetch_all($result_users, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +18,7 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>All Users | Init POS</title>
+  <title>Roles and Permissions | Init POS</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -42,16 +47,16 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h3>All Users</h3>
+            <h3>Roles and Permissions</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="./">Home</a></li>
-              <li class="breadcrumb-item active">All Users</li>
+              <li class="breadcrumb-item active">Roles and Permissions</li>
             </ol>
           </div>
         </div>
-
+        
         <!-- Success message display -->
         <?php if (isset($_GET['message'])): ?>
           <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -61,7 +66,7 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
             </button>
           </div>
         <?php endif; ?>
-        
+
       </div><!-- /.container-fluid -->
     </section>
 
@@ -72,35 +77,32 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">All Users List</h3>
+                <h3 class="card-title">Admins List</h3>
               </div>
-              <!-- /.card-header -->
               <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="adminTable" class="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th>User ID</th>
                       <th>Username</th>
                       <th>First Name</th>
-                      <th>Role</th>
                       <th>Date Added</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($users as $user): ?>
+                    <?php foreach ($admins as $admin): ?>
                     <tr>
-                      <td><?php echo htmlspecialchars($user['user_id']); ?></td>
-                      <td><?php echo htmlspecialchars($user['username']); ?></td>
-                      <td><?php echo htmlspecialchars($user['first_name']); ?></td>
-                      <td><?php echo htmlspecialchars($user['role']); ?></td>
-                      <td><?php echo htmlspecialchars($user['date_added']); ?></td>
+                      <td><?php echo htmlspecialchars($admin['user_id']); ?></td>
+                      <td><?php echo htmlspecialchars($admin['username']); ?></td>
+                      <td><?php echo htmlspecialchars($admin['first_name']); ?></td>
+                      <td><?php echo htmlspecialchars($admin['date_added']); ?></td>
                       <td>
-                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="fillEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">
-                          <i class="fas fa-edit"></i> 
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="fillEditModal(<?php echo htmlspecialchars(json_encode($admin)); ?>)">
+                          <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteId(<?php echo $user['user_id']; ?>)">
-                          <i class="fas fa-trash"></i> 
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteId(<?php echo $admin['user_id']; ?>)">
+                          <i class="fas fa-trash"></i>
                         </button>
                       </td>
                     </tr>
@@ -111,22 +113,64 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
                       <th>User ID</th>
                       <th>Username</th>
                       <th>First Name</th>
-                      <th>Role</th>
                       <th>Date Added</th>
                       <th>Actions</th>
                     </tr>
                   </tfoot>
                 </table>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
+
+          <div class="col-12 mt-4">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Other Users List</h3>
+              </div>
+              <div class="card-body">
+                <table id="userTable" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>User ID</th>
+                      <th>Username</th>
+                      <th>First Name</th>
+                      <th>Date Added</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($other_users as $user): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($user['user_id']); ?></td>
+                      <td><?php echo htmlspecialchars($user['username']); ?></td>
+                      <td><?php echo htmlspecialchars($user['first_name']); ?></td>
+                      <td><?php echo htmlspecialchars($user['date_added']); ?></td>
+                      <td>
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="fillEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteId(<?php echo $user['user_id']; ?>)">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>User ID</th>
+                      <th>Username</th>
+                      <th>First Name</th>
+                      <th>Date Added</th>
+                      <th>Actions</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
@@ -187,7 +231,7 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <p id="deleteMessage">Are you sure you want to delete this user?</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-danger">Delete</button>
           </div>
         </form>
@@ -197,12 +241,8 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
   </aside>
   <!-- /.control-sidebar -->
-
-  <!-- Main Footer -->
-  <?php include "includes/footer.php" ?>
 
   <!-- jQuery -->
   <script src="plugins/jquery/jquery.min.js"></script>
@@ -226,12 +266,19 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
   <script>
     $(function () {
-      $("#example1").DataTable({
+      $("#adminTable").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+      }).buttons().container().appendTo('#adminTable_wrapper .col-md-6:eq(0)');
+
+      $("#userTable").DataTable({
+        "responsive": true,
+        "lengthChange": false,
+        "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+      }).buttons().container().appendTo('#userTable_wrapper .col-md-6:eq(0)');
     });
 
     function fillEditModal(user) {
