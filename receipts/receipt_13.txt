@@ -1,0 +1,8 @@
+Receipt for Sale #13
+Date: 2024-11-04 10:47:52
+Cashier ID: 1
+Payment Method: cash
+----------------------------------------
+Item	Qty	Price	Total
+----------------------------------------
+Total: NaN

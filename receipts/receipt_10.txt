@@ -1,0 +1,10 @@
+Receipt for Sale #10
+Date: 2024-11-04 10:37:33
+Cashier ID: 1
+Payment Method: mpesa
+----------------------------------------
+Item	Qty	Price	Total
+test 1	2	20	40
+test2	1	20	20
+----------------------------------------
+Total: 60

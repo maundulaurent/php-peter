@@ -1,0 +1,9 @@
+Receipt for Sale #14
+Date: 2024-11-04 10:51:45
+Cashier ID: 1
+Payment Method: cash
+----------------------------------------
+Item	Qty	Price	Total
+test2	2	20	40
+----------------------------------------
+Total: 40
